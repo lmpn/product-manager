@@ -1,0 +1,43 @@
+syntax = "proto3";
+package services;
+option go_package = "proto;servicespb";
+
+message Product {
+  string name = 1;
+  string desc = 2;
+  double price = 3;
+}
+
+message Notification {
+  string name = 1;
+  double price = 2;
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string desc = 2;
+  double price = 3;
+}
+message CreateProductResponse { string result = 1; }
+
+message ListAllRequest {}
+message ListAllResponse { repeated Product product = 1; }
+
+message ChangePriceRequest {
+  string name = 1;
+  double price = 2;
+}
+message ChangePriceResponse { string result = 1; }
+
+service ProductService {
+  rpc CreateProduct(CreateProductRequest) returns(CreateProductResponse){};
+  rpc ListAllProducts(ListAllRequest) returns(ListAllResponse){};
+  rpc ChangePrice(ChangePriceRequest) returns(ChangePriceResponse){};
+}
+
+message NotificationRequest {}
+message NotificationResponse { repeated Notification notification = 1; }
+
+service NotificationService {
+  rpc NewestNotifications(NotificationRequest) returns(NotificationResponse){};
+}

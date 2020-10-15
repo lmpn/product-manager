@@ -1,0 +1,63 @@
+version: "3"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./.docker/server.Dockerfile
+    volumes:
+      - "./src/server:/server"
+    ports:
+      - "10000:10000"
+    command: sh /server/startServer.sh
+  productservice:
+    environment:
+      - PGUSER=postgres
+      - PGURL=postgresdb:5432
+      - PGPASS=secrect
+      - PGDB=products
+      - RMQURL=rabbitmq:5672
+      - WAIT_HOSTS=postgresdb:5432, rabbitmq:5672
+      - WAIT_HOSTS_TIMEOUT=60
+    build:
+      context: .
+      dockerfile: ./.docker/product_service.Dockerfile
+    volumes:
+      - "./src/product_service:/product_service"
+    ports:
+      - "4000:4000"
+    command: sh /product_service/startProductService.sh
+  notificationservice:
+    build:
+      context: .
+      dockerfile: ./.docker/notification_service.Dockerfile
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672
+      - WAIT_HOSTS_TIMEOUT=60
+    volumes:
+      - "./src/notification_service:/notification_service"
+    ports:
+      - "4001:4001"
+    command: sh /notification_service/startNotificationService.sh
+  postgresdb:
+    image: postgres:12
+    command: 'postgres -c "max_connections=200"'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secrect
+    volumes:
+      - ./.docker/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  rabbitmq:
+    image: rabbitmq:3.8
+    hostname: rabbitmq
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    ports:
+      - "5672:5672"
+
+volumes:
+  postgres-data:
