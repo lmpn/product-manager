@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./generate.sh
+sh generate.sh
 docker-compose up 
