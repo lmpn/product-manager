@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-type NotificationService struct {
+//NotificationServiceState stores the 10 most recent notifications in an array
+type NotificationServiceState struct {
 	newestNotifications []*servicespb.Notification
 }
 
@@ -31,7 +32,7 @@ func startService(s *grpc.Server, lis net.Listener) {
 	}
 }
 
-func (ns *NotificationService) startMonitoring() {
+func (ns *NotificationServiceState) startMonitoring() {
 	conn, err := amqp.Dial("amqp://rabbitmq:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -74,7 +75,9 @@ func (ns *NotificationService) startMonitoring() {
 	}
 }
 
-func (ns *NotificationService) NewestNotifications(ctx context.Context, request *servicespb.NotificationRequest) (*servicespb.NotificationResponse, error) {
+//NewestNotifications function implementation of NotificationService
+//Returns the latest notifications
+func (ns *NotificationServiceState) NewestNotifications(ctx context.Context, request *servicespb.NotificationRequest) (*servicespb.NotificationResponse, error) {
 	return &servicespb.NotificationResponse{Notification: ns.newestNotifications}, nil
 }
 
@@ -85,7 +88,7 @@ func main() {
 	}
 	fmt.Println("Notification service starting")
 	s := grpc.NewServer()
-	sv := &NotificationService{}
+	sv := &NotificationServiceState{}
 	servicespb.RegisterNotificationServiceServer(s, sv)
 	go sv.startMonitoring()
 	go startService(s, listener)

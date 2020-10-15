@@ -88,7 +88,7 @@ func StartService(s *grpc.Server, lis net.Listener) {
 
 }
 
-//CreateProduct is the implementation of the ProductService.
+//CreateProduct is the function implementation of ProductService's interface.
 //The insertion fails if exists a record with the same name.
 func (ps *ProductServiceState) CreateProduct(ctx context.Context, request *servicespb.CreateProductRequest) (*servicespb.CreateProductResponse, error) {
 	product := &Product{Name: request.GetName(),
@@ -107,7 +107,7 @@ func (ps *ProductServiceState) CreateProduct(ctx context.Context, request *servi
 	return &servicespb.CreateProductResponse{Result: "Product already exists"}, nil
 }
 
-//ListAllProducts is the implementation of the ProductService.
+//ListAllProducts is the function implementation of ProductService's interface..
 //This function sends to the client all the existing products.
 func (ps *ProductServiceState) ListAllProducts(ctx context.Context, request *servicespb.ListAllRequest) (*servicespb.ListAllResponse, error) {
 	var prods []Product
@@ -126,7 +126,7 @@ func (ps *ProductServiceState) ListAllProducts(ctx context.Context, request *ser
 	return &servicespb.ListAllResponse{Product: pbProds}, nil
 }
 
-//ChangePrice is the implementation of the ProductService.
+//ChangePrice is the function implementation of ProductService's interface.
 //This function updates the price of a product and sends a message to the notification service through RabbitMQ
 func (ps *ProductServiceState) ChangePrice(ctx context.Context, request *servicespb.ChangePriceRequest) (*servicespb.ChangePriceResponse, error) {
 	product := &Product{Name: request.GetName(), Price: request.GetPrice()}
