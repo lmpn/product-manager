@@ -35,6 +35,8 @@ type notificationService struct {
 	Cc     *grpc.ClientConn
 }
 
+//ServerState struct stores a productService and notificationService.
+//It handles the connect and disconnection of these to services.
 type ServerState struct {
 	PService productService
 	NService notificationService
