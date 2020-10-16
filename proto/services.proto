@@ -20,8 +20,8 @@ message CreateProductRequest {
 }
 message CreateProductResponse { string result = 1; }
 
-message ListAllRequest {}
-message ListAllResponse { repeated Product product = 1; }
+message PageRequest { int32 page = 1; int32 limit = 2;}
+message PageResponse { repeated Product product = 1; }
 
 message ChangePriceRequest {
   string name = 1;
@@ -31,7 +31,7 @@ message ChangePriceResponse { string result = 1; }
 
 service ProductService {
   rpc CreateProduct(CreateProductRequest) returns(CreateProductResponse){};
-  rpc ListAllProducts(ListAllRequest) returns(ListAllResponse){};
+  rpc ProductsPage(PageRequest) returns(PageResponse){};
   rpc ChangePrice(ChangePriceRequest) returns(ChangePriceResponse){};
 }
 

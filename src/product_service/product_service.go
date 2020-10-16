@@ -107,12 +107,19 @@ func (ps *ProductServiceState) CreateProduct(ctx context.Context, request *servi
 	return &servicespb.CreateProductResponse{Result: "Product already exists"}, nil
 }
 
-//ListAllProducts is the implementation of the ProductService.
-//This function sends to the client all the existing products.
-func (ps *ProductServiceState) ListAllProducts(ctx context.Context, request *servicespb.ListAllRequest) (*servicespb.ListAllResponse, error) {
+//ProductsPage is the implementation of the ProductService.
+//This function sends "limit" products that corresponds from a "page".
+func (ps *ProductServiceState) ProductsPage(ctx context.Context, request *servicespb.PageRequest) (*servicespb.PageResponse, error) {
 	var prods []Product
 	var pbProds []*servicespb.Product
-	err := ps.DbConn.Model(&prods).Select()
+	var page int
+	var limit int
+	limit32 := request.GetLimit()
+	limit = int(limit32)
+	page32 := request.GetPage()
+	page = int(page32)
+
+	err := ps.DbConn.Model(&prods).Limit(limit).Offset(limit * page).Select()
 	if err != nil {
 		fmt.Println("DBError on select: %v\n", err)
 		return nil, err
@@ -123,7 +130,7 @@ func (ps *ProductServiceState) ListAllProducts(ctx context.Context, request *ser
 			Price: p.Price}
 		pbProds = append(pbProds, pbProduct)
 	}
-	return &servicespb.ListAllResponse{Product: pbProds}, nil
+	return &servicespb.PageResponse{Product: pbProds}, nil
 }
 
 //ChangePrice is the implementation of the ProductService.

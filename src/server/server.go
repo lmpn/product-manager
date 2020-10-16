@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -78,10 +79,27 @@ func newestNotifications(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func returnProducts(w http.ResponseWriter, r *http.Request) {
+func returnProductsPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnProducts")
-	request := &servicespb.ListAllRequest{}
-	response, err := ss.PService.Client.ListAllProducts(context.Background(), request)
+	vars := mux.Vars(r)
+	page, pageErr := strconv.Atoi(vars["page"])
+	limit, limitErr := strconv.Atoi(vars["limit"])
+	if pageErr != nil {
+		fmt.Println("Error: %v\n", pageErr)
+		json.NewEncoder(w).Encode("Incorrect page data")
+		return
+	}
+	if limitErr != nil {
+		fmt.Println("Error: %v\n", limitErr)
+		json.NewEncoder(w).Encode("Incorrect limit data")
+		return
+	}
+	var limit32 int32
+	var page32 int32
+	limit32 = int32(limit)
+	page32 = int32(page)
+	request := &servicespb.PageRequest{Page: page32, Limit: limit32}
+	response, err := ss.PService.Client.ProductsPage(context.Background(), request)
 
 	if err == nil {
 		json.NewEncoder(w).Encode(response.GetProduct())
@@ -134,10 +152,10 @@ func changePrice(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests(sv *http.Server, router *mux.Router) {
-	router.HandleFunc("/products", returnProducts)
-	router.HandleFunc("/createProduct", createProduct).Methods("POST")
-	router.HandleFunc("/changePrice/{name}", changePrice).Methods("POST")
-	router.HandleFunc("/notifications", newestNotifications)
+	router.HandleFunc("/api/v1/createProduct", createProduct).Methods("POST")
+	router.HandleFunc("/api/v1/changePrice/{name}", changePrice).Methods("POST")
+	router.HandleFunc("/api/v1/notifications", newestNotifications)
+	router.HandleFunc("/api/v1/products/page={page}&limit={limit}", returnProductsPage)
 	if err := sv.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
