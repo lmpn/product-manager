@@ -22,5 +22,6 @@ The application is containerized with Docker and the services are managed with d
 
 ## Usage
 To start run: `startApp.sh`
-If the RabbitMQ container exists when you run the start script run: `chmod 600 .docker/rabbitmq/data/.erlang.cookie`
+
+If the RabbitMQ container exits when you run the start script run: `chmod 600 .docker/rabbitmq/data/.erlang.cookie`
 
