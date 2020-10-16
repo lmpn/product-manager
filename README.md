@@ -18,9 +18,10 @@ The application is containerized with Docker and the services are managed with d
 ## Architecture
 ![product-manager](https://i.imgur.com/O6uutVB.png)
 ## Requirements
-This application requires that the local machine to have: 
 - protoc-gen-go
 - Docker
 
 ## Usage
 To start run: `startApp.sh`
+If the RabbitMQ container exists when you run the start script run: `chmod 600 .docker/rabbitmq/data/.erlang.cookie`
+
