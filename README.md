@@ -16,7 +16,7 @@ The application is containerized with Docker and the services are managed with d
 - Docker
 
 ## Architecture
-![product-manager](https://i.imgur.com/O6uutVB.png)
+![product-manager](https://imgur.com/R5GzOVW)
 ## Requirements
 - protoc-gen-go
 - Docker
