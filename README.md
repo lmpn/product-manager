@@ -13,7 +13,6 @@ The application is containerized with Docker and the services are managed with d
 - RabbitMQ
 - Docker
 - GRPC
-- Docker
 
 ## Architecture
 ![](https://i.imgur.com/fTUAl1h.png)
